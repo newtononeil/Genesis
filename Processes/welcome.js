@@ -1,0 +1,55 @@
+require("../Core.js");
+const { mk } = require("../Database/dataschema.js");
+
+module.exports = async (Miku, anu) => {
+    try {
+      let metadata = await Miku.groupMetadata(anu.id);
+      let participants = anu.participants;
+      let desc = metadata.desc;
+      if(desc == undefined) desc = "No Description";
+      let WELstatus = await mk.findOne({
+        id: m.from
+    });
+      for (let num of participants) {
+        try
+         {
+          ppuser = await Miku.profilePictureUrl(num, "image");
+        } catch {
+          ppuser = botImage4;
+        }
+  
+        if (anu.action == "add") {
+          let WAuserName = num;
+          console.log(`+${WAuserName.split("@")[0]} Joined/Got Added in: ${metadata.subject}`);
+          mikutext = `
+Hello @${WAuserName.split("@")[0]} Senpai,
+
+Welcome to *${metadata.subject}*.
+
+*🧣 Group Description 🧣*
+
+${desc}
+
+*Thank You.*
+  `;
+  
+        } else if (anu.action == "remove") {
+          let WAuserName = num;
+          console.log(`+${WAuserName.split("@")[0]} Left/Got Removed from: ${metadata.subject}`);
+          mikutext = `
+  @${WAuserName.split("@")[0]} Senpai left the group.
+  `;
+  
+        }
+        if (WELstatus.switchWelcome == "true"){
+          await Miku.sendMessage(anu.id,{
+            image: {url: ppuser},
+            caption: mikutext,
+            mentions: [num],
+          })
+        }
+      }           
+    } catch (err) {
+      console.log(err);
+    }
+  };
